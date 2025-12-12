@@ -28,6 +28,68 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+const signupSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+app.post("/api/signup", async (req, res) => {
+  try {
+    const parsed = signupSchema.safeParse(req.body);
+
+    if (!parsed.success) {
+      res
+        .status(400)
+        .json({ error: "Validation failed", details: parsed.error.errors });
+      return;
+    }
+
+    const { name, email, password } = parsed.data;
+
+    // Check if email already exists
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email));
+
+    if (existingUser.length > 0) {
+      res.status(409).json({ error: "Email already exists" });
+      return;
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert new user
+    const result = await db
+      .insert(users)
+      .values({
+        name,
+        email,
+        password: hashedPassword,
+      })
+      .returning();
+
+    const user = result[0];
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name },
+      JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    res.status(201).json({
+      token,
+      user: { id: user.id, email: user.email, name: user.name },
+    });
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.post("/api/login", async (req, res) => {
   try {
     const parsed = loginSchema.safeParse(req.body);

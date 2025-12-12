@@ -68,6 +68,17 @@ The server starts on port 8000 by default.
 npm start
 ```
 
+## Getting Started
+
+To use the API, you have two options:
+
+1. **Sign Up:** Register a new account using the `/api/signup` endpoint (see below)
+2. **Use Default User:** Log in with the seeded default credentials:
+   - **Email:** `admin@example.com`
+   - **Password:** `password123`
+
+After successful authentication (sign up or login), you'll receive a JWT token for making authenticated requests.
+
 ## API Endpoints
 
 ### Health Check
@@ -84,7 +95,49 @@ Response:
 }
 ```
 
+### Sign Up
+
+Register a new user account.
+
+```bash
+POST /api/signup
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "securepass123"
+}
+```
+
+**Request Body:**
+
+- `name` (string, required): User's full name
+- `email` (string, required): Valid email address
+- `password` (string, required): Minimum 6 characters
+
+**Success Response (201 Created):**
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "john@example.com",
+    "name": "John Doe"
+  }
+}
+```
+
+**Error Responses:**
+
+- `400`: Validation error (missing or invalid fields)
+- `409`: Email already exists
+- `500`: Server error
+
 ### Login
+
+Authenticate an existing user.
 
 ```bash
 POST /api/login
@@ -96,7 +149,12 @@ Content-Type: application/json
 }
 ```
 
-Response:
+**Request Body:**
+
+- `email` (string, required): User's email address
+- `password` (string, required): User's password
+
+**Success Response (200 OK):**
 
 ```json
 {
@@ -109,7 +167,7 @@ Response:
 }
 ```
 
-Error responses use standard HTTP status codes:
+**Error Responses:**
 
 - `400`: Validation error
 - `401`: Invalid credentials
