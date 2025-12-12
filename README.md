@@ -136,7 +136,7 @@ src/
   └── seed.js        # Database seeding script
 ```
 
-## Technology Stack
+## Tech Stack
 
 - **Runtime:** Node.js
 - **Framework:** Express.js
