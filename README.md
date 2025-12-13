@@ -305,7 +305,3 @@ This API is configured for deployment on Vercel with serverless functions.
 2. Link project: `vercel link`
 3. Configure environment variables in Vercel dashboard
 4. Deploy: `vercel --prod`
-
-## License
-
-MIT
