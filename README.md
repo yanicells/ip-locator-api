@@ -37,7 +37,13 @@ PORT=8000
 - `JWT_SECRET`: Secret key for JWT token signing (generate using `openssl rand -base64 32`)
 - `PORT`: Server port (defaults to 8000)
 
-### 4. Database Migration
+### 4. Generate & Migrate Database
+
+Generate the SQL artifacts from the Drizzle schema (required after any schema change):
+
+```bash
+npm run generate
+```
 
 Push the database schema to your PostgreSQL instance:
 
@@ -294,14 +300,3 @@ geo-api/
 ├── package.json          # Dependencies and scripts
 └── vercel.json           # Vercel deployment configuration
 ```
-
-## Production Deployment
-
-This API is configured for deployment on Vercel with serverless functions.
-
-### Deployment Steps
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link project: `vercel link`
-3. Configure environment variables in Vercel dashboard
-4. Deploy: `vercel --prod`
