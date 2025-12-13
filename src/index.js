@@ -11,6 +11,7 @@ import { users, history } from "./db/schema.js";
 const app = express();
 const PORT = process.env.PORT || 8000;
 const JWT_SECRET = process.env.JWT_SECRET;
+const runningOnVercel = Boolean(process.env.VERCEL);
 
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is not set");
@@ -349,6 +350,11 @@ app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Only start a listener locally; Vercel invokes the handler directly.
+if (!runningOnVercel) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;
